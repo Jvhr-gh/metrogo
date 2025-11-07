@@ -1,67 +1,77 @@
-// pages/login.js
-// pages/login.js
 import { useState } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Navbar from "../components/Navbar";
 
 export default function Login() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
   const router = useRouter();
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
 
-  const handleLogin = () => {
-    const savedUser = JSON.parse(localStorage.getItem("metrogo_user"));
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const savedUser = JSON.parse(localStorage.getItem("metrogo-user"));
+
     if (
       savedUser &&
-      savedUser.username === username &&
-      savedUser.password === password
+      savedUser.email === formData.email &&
+      savedUser.password === formData.password
     ) {
-      alert("ورود موفق!");
-      router.push("/dashboard");
+      alert("ورود با موفقیت انجام شد!");
+      router.push("/wallet"); // ✅ انتقال به کیف پول
     } else {
-      alert("نام کاربری یا رمز عبور اشتباه است!");
+      alert("ایمیل یا رمز عبور اشتباه است!");
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-500 to-pink-400">
-      <Navbar />
-      <div className="flex items-center justify-center min-h-[80vh]">
-        <div className="bg-white p-8 rounded-xl shadow-2xl w-96">
-          <h1 className="text-3xl font-bold mb-6 text-center text-purple-700">
-            ورود
-          </h1>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-200 to-blue-500">
+      <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md">
+        <h1 className="text-3xl font-bold text-center text-blue-600 mb-6">
+          MetroGo
+        </h1>
+        <h2 className="text-center text-gray-700 mb-4">
+          ورود به حساب کاربری
+        </h2>
+
+        <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
           <input
-            type="text"
-            placeholder="نام کاربری"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="border  border-gray-300 px-4 py-2 rounded mb-4 w-full focus:outline-none focus:ring-2 focus:ring-purple-500 text-black"
+            type="email"
+            name="email"
+            placeholder="ایمیل"
+            value={formData.email}
+            onChange={handleChange}
+            required
+            className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
           <input
             type="password"
+            name="password"
             placeholder="رمز عبور"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="border border-gray-300 px-4 py-2 rounded mb-4 w-full focus:outline-none focus:ring-2 focus:ring-purple-500 text-black"
+            value={formData.password}
+            onChange={handleChange}
+            required
+            className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
           <button
-            onClick={handleLogin}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition mb-4 shadow-md"
+            type="submit"
+            className="bg-blue-600 text-white rounded-lg py-2 hover:bg-blue-700 transition"
           >
             ورود
           </button>
-          <p className="text-center text-gray-600">
-            حساب نداری؟{" "}
-            <Link
-              href="/signup"
-              className="text-purple-600 font-semibold underline"
-            >
-              ثبت‌نام
-            </Link>
-          </p>
-        </div>
+        </form>
+
+        <p className="text-center text-gray-600 mt-4">
+          حساب ندارید؟{" "}
+          <Link href="/signup" className="text-blue-600 hover:underline">
+            ثبت‌نام کنید
+          </Link>
+        </p>
       </div>
     </div>
   );

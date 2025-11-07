@@ -43,14 +43,33 @@ export default function Home() {
               color: "#E3F2FD",
             }}
           >
-            <h1 style={{ fontSize: "2.6rem", margin: "0 0 8px", color: "#81D4FA" }}>
+            <h1
+              style={{
+                fontSize: "2.6rem",
+                margin: "0 0 8px",
+                color: "#81D4FA",
+              }}
+            >
               MetroGo
             </h1>
-            <p style={{ fontSize: "1.05rem", margin: "0 0 22px", color: "#DFF3FF" }}>
+            <p
+              style={{
+                fontSize: "1.05rem",
+                margin: "0 0 22px",
+                color: "#DFF3FF",
+              }}
+            >
               پرداخت سریع، آسان و بدون کارت — فقط با گوشی از گیت مترو عبور کن.
             </p>
 
-            <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
+            <div
+              style={{
+                display: "flex",
+                gap: "12px",
+                justifyContent: "center",
+                flexWrap: "wrap",
+              }}
+            >
               <Link href="/signup">
                 <button
                   style={{
@@ -84,6 +103,26 @@ export default function Home() {
                   ورود
                 </button>
               </Link>
+              <a
+                href="https://forms.gle/9PyYeJUL9KQnL9oW6"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <button
+                  style={{
+                    padding: "10px 20px",
+                    borderRadius: "8px",
+                    backgroundColor: "#0288D1",
+                    color: "white",
+                    border: "none",
+                    cursor: "pointer",
+                    fontsize:"1rem",
+                    fontWeight:600,
+                  }}
+                >
+                  نظرسنجی کاربران 📝
+                </button>
+              </a>
             </div>
           </div>
         </section>
@@ -100,8 +139,14 @@ export default function Home() {
             boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
           }}
         >
-          <h2 style={{ textAlign: "center", fontSize: "1.8rem", marginBottom: "20px" }}>
-            مزایای استفاده از MetroGo
+          <h2
+            style={{
+              textAlign: "center",
+              fontSize: "1.8rem",
+              marginBottom: "20px",
+            }}
+          >
+            MetroGoمزایای استفاده از
           </h2>
 
           <div
@@ -111,29 +156,57 @@ export default function Home() {
               gap: "18px",
             }}
           >
-            <div style={{ padding: "18px", borderRadius: "10px", border: "1px solid #E3F2FD" }}>
+            <div
+              style={{
+                padding: "18px",
+                borderRadius: "10px",
+                border: "1px solid #E3F2FD",
+              }}
+            >
               <div style={{ fontSize: "22px", marginBottom: "8px" }}>⚡</div>
               <h3 style={{ margin: "0 0 8px" }}>سرعت بالا</h3>
-              <p style={{ margin: 0, color: "#555" }}>ورود سریع به مترو بدون ایستادن در صف شارژ کارت.</p>
+              <p style={{ margin: 0, color: "#555" }}>
+                .ورود سریع به مترو بدون ایستادن در صف شارژ کارت
+              </p>
             </div>
 
-            <div style={{ padding: "18px", borderRadius: "10px", border: "1px solid #E3F2FD" }}>
+            <div
+              style={{
+                padding: "18px",
+                borderRadius: "10px",
+                border: "1px solid #E3F2FD",
+              }}
+            >
               <div style={{ fontSize: "22px", marginBottom: "8px" }}>🔒</div>
               <h3 style={{ margin: "0 0 8px" }}>امنیت بالا</h3>
-              <p style={{ margin: 0, color: "#555" }}>پرداخت امن با کیف پول دیجیتال و رمزگذاری‌شده.</p>
+              <p style={{ margin: 0, color: "#555" }}>
+                .پرداخت امن با کیف پول دیجیتال و رمزگذاری‌شده
+              </p>
             </div>
 
-            <div style={{ padding: "18px", borderRadius: "10px", border: "1px solid #E3F2FD" }}>
+            <div
+              style={{
+                padding: "18px",
+                borderRadius: "10px",
+                border: "1px solid #E3F2FD",
+              }}
+            >
               <div style={{ fontSize: "22px", marginBottom: "8px" }}>💰</div>
               <h3 style={{ margin: "0 0 8px" }}>صرفه‌جویی</h3>
-              <p style={{ margin: 0, color: "#555" }}>شارژ آسان و کاهش هزینه‌های کارت فیزیکی.</p>
+              <p style={{ margin: 0, color: "#555" }}>
+                .شارژ آسان و کاهش هزینه‌های کارت فیزیکی
+              </p>
             </div>
           </div>
 
           {/* تماس با ما */}
-          <div style={{ textAlign: "center", marginTop: "26px", color: "#0D47A1" }}>
+          <div
+            style={{ textAlign: "center", marginTop: "26px", color: "#0D47A1" }}
+          >
             <h3 style={{ marginBottom: "6px" }}>تماس با ما</h3>
-            <p style={{ margin: 0, color: "#555" }}>info@metrogo.ir | 021-12345678</p>
+            <p style={{ margin: 0, color: "#555" }}>
+              info@metrogo.ir | 021-12345678
+            </p>
           </div>
         </section>
       </div>

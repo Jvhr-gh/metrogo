@@ -1,11 +1,15 @@
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation"; // 👈 اضافه شد
 
 export default function Signup() {
+  const router = useRouter(); // 👈 تعریف router
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
+    balance: 50000, // 👈 اضافه برای کیف پول
+    transactions: [],
   });
 
   const handleChange = (e) => {
@@ -16,6 +20,7 @@ export default function Signup() {
     e.preventDefault();
     localStorage.setItem("metrogo-user", JSON.stringify(formData));
     alert("ثبت‌نام با موفقیت انجام شد!");
+    router.push("/wallet"); // 👈 بعد از ثبت‌نام، برو به کیف پول
   };
 
   return (
@@ -40,7 +45,7 @@ export default function Signup() {
           textAlign: "center",
         }}
       >
-        <h1 style={{ color: "#0D47A1", marginBottom: "20px" }}>ثبت‌نام در MetroGo</h1>
+        <h1 style={{ color: "#0D47A1", marginBottom: "20px" }}>ثبت‌نام MetroGo</h1>
 
         <form onSubmit={handleSubmit}>
           <input
@@ -87,7 +92,6 @@ export default function Signup() {
   );
 }
 
-// 🎨 استایل‌های جدا برای ورودی و دکمه
 const inputStyle = {
   width: "100%",
   padding: "12px",

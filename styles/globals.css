@@ -24,3 +24,15 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+/* رنگ placeholder فیلدهای ورودی */
+input::placeholder {
+  color: #000; /* یا هر رنگ دلخواه */
+  opacity: 1;  /* باعث میشه خیلی کم‌رنگ نشه */
+}
+
+/* اگر از textarea استفاده می‌کنی */
+textarea::placeholder {
+  color: #000;
+  opacity: 1;
+}
+
