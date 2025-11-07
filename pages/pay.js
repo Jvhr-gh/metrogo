@@ -56,7 +56,7 @@ export default function Pay() {
 
         <div className="bg-blue-50 p-4 rounded-xl mb-6 shadow-inner">
           <p className="text-gray-700 text-lg font-medium mb-1">
-            موجودی کیف پول شما:
+            :موجودی کیف پول شما
           </p>
           <span className="text-2xl font-bold text-green-600">
             {user.balance.toLocaleString()} تومان
@@ -65,7 +65,7 @@ export default function Pay() {
 
         <div className="flex flex-col gap-3 mb-6 text-right">
           <label className="font-semibold text-gray-800 text-lg">
-            مبلغ بلیط (تومان):
+            :مبلغ بلیط (تومان)
           </label>
           <input
             type="number"
