@@ -5,27 +5,44 @@ import Link from "next/link";
 export default function Login() {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    email: "",
+    username: "",
     password: "",
   });
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const savedUser = JSON.parse(localStorage.getItem("metrogo-user"));
+    setLoading(true);
 
-    if (
-      savedUser &&
-      savedUser.email === formData.email &&
-      savedUser.password === formData.password
-    ) {
+    try {
+      const res = await fetch("/pages/api/login.js", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || "خطا در ورود!");
+        setLoading(false);
+        return;
+      }
+
+      // ذخیره JWT در localStorage
+      localStorage.setItem("metrogo-token", data.token);
+
       alert("ورود با موفقیت انجام شد!");
-      router.push("/wallet"); // ✅ انتقال به کیف پول
-    } else {
-      alert("ایمیل یا رمز عبور اشتباه است!");
+      router.push("/wallet"); // انتقال به کیف پول
+    } catch (err) {
+      console.error(err);
+      alert("خطای سرور، دوباره تلاش کنید.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -35,16 +52,14 @@ export default function Login() {
         <h1 className="text-3xl font-bold text-center text-blue-600 mb-6">
           MetroGo
         </h1>
-        <h2 className="text-center text-gray-700 mb-4">
-          ورود به حساب کاربری
-        </h2>
+        <h2 className="text-center text-gray-700 mb-4">ورود به حساب کاربری</h2>
 
         <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
           <input
-            type="email"
-            name="email"
-            placeholder="ایمیل"
-            value={formData.email}
+            type="text"
+            name="username"
+            placeholder="نام کاربری"
+            value={formData.username}
             onChange={handleChange}
             required
             className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -60,9 +75,10 @@ export default function Login() {
           />
           <button
             type="submit"
-            className="bg-blue-600 text-white rounded-lg py-2 hover:bg-blue-700 transition"
+            disabled={loading}
+            className="bg-blue-600 text-white rounded-lg py-2 hover:bg-blue-700 transition disabled:opacity-50"
           >
-            ورود
+            {loading ? "در حال ورود..." : "ورود"}
           </button>
         </form>
 

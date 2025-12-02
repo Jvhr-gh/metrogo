@@ -1,26 +1,47 @@
 import Link from "next/link";
 import { useState } from "react";
-import { useRouter } from "next/navigation"; // 👈 اضافه شد
+import { useRouter } from "next/navigation";
 
 export default function Signup() {
-  const router = useRouter(); // 👈 تعریف router
+  const router = useRouter();
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
+    username: "",
     password: "",
-    balance: 50000, // 👈 اضافه برای کیف پول
-    transactions: [],
   });
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    localStorage.setItem("metrogo-user", JSON.stringify(formData));
-    alert("ثبت‌نام با موفقیت انجام شد!");
-    router.push("/wallet"); // 👈 بعد از ثبت‌نام، برو به کیف پول
+    setLoading(true);
+
+    try {
+      const res = await fetch("/pages/api/signup.js", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || "خطا در ثبت‌نام!");
+        setLoading(false);
+        return;
+      }
+
+      alert("ثبت‌نام با موفقیت انجام شد!");
+      // بعد از ثبت‌نام کاربر را به login هدایت کنیم
+      router.push("/login");
+    } catch (err) {
+      console.error(err);
+      alert("خطای سرور، دوباره تلاش کنید.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -45,23 +66,16 @@ export default function Signup() {
           textAlign: "center",
         }}
       >
-        <h1 style={{ color: "#0D47A1", marginBottom: "20px" }}>ثبت‌نام MetroGo</h1>
+        <h1 style={{ color: "#0D47A1", marginBottom: "20px" }}>
+          ثبت‌نام MetroGo
+        </h1>
 
         <form onSubmit={handleSubmit}>
           <input
             type="text"
-            name="name"
-            placeholder="نام و نام خانوادگی"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            style={inputStyle}
-          />
-          <input
-            type="email"
-            name="email"
-            placeholder="ایمیل"
-            value={formData.email}
+            name="username"
+            placeholder="نام کاربری"
+            value={formData.username}
             onChange={handleChange}
             required
             style={inputStyle}
@@ -76,8 +90,8 @@ export default function Signup() {
             style={inputStyle}
           />
 
-          <button type="submit" style={buttonStyle}>
-            ثبت‌نام
+          <button type="submit" style={buttonStyle} disabled={loading}>
+            {loading ? "در حال ثبت‌نام..." : "ثبت‌نام"}
           </button>
         </form>
 

@@ -1,51 +1,67 @@
 // pages/pay.js
 import { useState, useEffect } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Pay() {
-  const [user, setUser] = useState(null);
+  const router = useRouter();
+  const [balance, setBalance] = useState(0);
   const [amount, setAmount] = useState(10000);
+  const [loading, setLoading] = useState(false);
 
+  // چک JWT و گرفتن موجودی واقعی
   useEffect(() => {
-    const savedUser = JSON.parse(localStorage.getItem("metrogo-user"));
-    if (savedUser) {
-      if (!savedUser.balance) savedUser.balance = 0;
-      if (!savedUser.transactions) savedUser.transactions = [];
-      setUser(savedUser);
+    const token = localStorage.getItem("metrogo-token");
+    if (!token) {
+      router.push("/login");
+      return;
     }
-  }, []);
 
-  const handlePay = () => {
-    if (!user) return;
+    const fetchBalance = async () => {
+      try {
+        const res = await fetch("/pages/api/wallet/balance", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "خطا در دریافت موجودی");
+        setBalance(data.balance);
+      } catch (err) {
+        console.error(err);
+        router.push("/login");
+      }
+    };
 
-    if (user.balance >= amount) {
-      const updatedUser = {
-        ...user,
-        balance: user.balance - amount,
-        transactions: [
-          ...user.transactions,
-          `پرداخت بلیط مترو: ${amount.toLocaleString()} تومان`,
-        ],
-      };
-      localStorage.setItem("metrogo-user", JSON.stringify(updatedUser));
-      setUser(updatedUser);
-      alert("✅ پرداخت با موفقیت انجام شد!");
-    } else {
-      alert("⚠️ موجودی کافی نیست. لطفاً کیف پول را شارژ کنید.");
+    fetchBalance();
+  }, [router]);
+
+  const handlePay = async () => {
+    if (amount <= 0) return alert("مبلغ باید بیشتر از صفر باشد.");
+    setLoading(true);
+    const token = localStorage.getItem("metrogo-token");
+
+    try {
+      const res = await fetch("/pages/api/wallet/subtract", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ amount }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || "پرداخت موفقیت‌آمیز نبود");
+      } else {
+        setBalance(data.balance);
+        alert("✅ پرداخت با موفقیت انجام شد!");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("خطای سرور، دوباره تلاش کنید.");
+    } finally {
+      setLoading(false);
     }
   };
-
-  if (!user)
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-blue-100">
-        <p className="text-xl text-gray-700">
-          لطفاً ابتدا وارد شوید.{" "}
-          <Link href="/login" className="text-blue-600 underline font-semibold">
-            ورود
-          </Link>
-        </p>
-      </div>
-    );
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-blue-300 flex items-center justify-center p-6">
@@ -59,7 +75,7 @@ export default function Pay() {
             :موجودی کیف پول شما
           </p>
           <span className="text-2xl font-bold text-green-600">
-            {user.balance.toLocaleString()} تومان
+            {balance.toLocaleString()} تومان
           </span>
         </div>
 
@@ -77,16 +93,18 @@ export default function Pay() {
 
         <button
           onClick={handlePay}
-          className="w-full bg-blue-600 text-white py-3 rounded-lg text-lg font-semibold shadow-md hover:bg-blue-700 transition mb-4"
+          disabled={loading}
+          className="w-full bg-blue-600 text-white py-3 rounded-lg text-lg font-semibold shadow-md hover:bg-blue-700 transition mb-4 disabled:opacity-50"
         >
-          🚇 پرداخت
+          {loading ? "در حال پرداخت..." : "🚇 پرداخت"}
         </button>
 
-        <Link href="/wallet">
-          <button className="w-full bg-gray-600 text-white py-2 rounded-lg text-base hover:bg-gray-700 transition">
-            ⬅️ بازگشت به کیف پول
-          </button>
-        </Link>
+        <button
+          onClick={() => router.push("/wallet")}
+          className="w-full bg-gray-600 text-white py-2 rounded-lg text-base hover:bg-gray-700 transition"
+        >
+          ⬅️ بازگشت به کیف پول
+        </button>
       </div>
     </div>
   );
