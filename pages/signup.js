@@ -19,7 +19,7 @@ export default function Signup() {
     setLoading(true);
 
     try {
-      const res = await fetch("/pages/api/signup.js", {
+      const res = await fetch("/pages/api/regester/route.js", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
