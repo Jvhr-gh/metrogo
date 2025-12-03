@@ -1,16 +1,24 @@
-import connectDB from "../../../utils/db";
-import User from "../../../models/User";
-import auth from "../../../utils/auth";
+import { createClient } from '@supabase/supabase-js'
 
 export default async function handler(req, res) {
-  if (req.method !== "GET") return res.status(405).json({ msg: "GET only" });
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  )
 
-  await connectDB();
+  const token = req.headers.authorization?.replace("Bearer ", "")
+  if (!token) return res.status(401).json({ message: "NO TOKEN" })
 
-  const userId = auth(req, res);
-  if (!userId) return;
+  const { data: user, error: userErr } = await supabase.auth.getUser(token)
 
-  const user = await User.findById(userId);
+  if (userErr || !user?.user) {
+    return res.status(401).json({ message: "INVALID TOKEN" })
+  }
 
-  res.json(user.transactions);
+  return res.status(200).json({
+    transactions: [
+      { id: 1, type: "deposit", amount: 50000 },
+      { id: 2, type: "ticket", amount: -15000 }
+    ]
+  })
 }

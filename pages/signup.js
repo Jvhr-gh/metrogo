@@ -1,47 +1,54 @@
 import Link from "next/link";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router";
+import { supabase } from "../lib/supabase";
 
 export default function Signup() {
   const router = useRouter();
+
   const [formData, setFormData] = useState({
-    username: "",
+    email: "",
     password: "",
   });
+
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    try {
-      const res = await fetch("/pages/api/regester/route.js", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+    const { email, password } = formData;
 
-      const data = await res.json();
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
 
-      if (!res.ok) {
-        alert(data.message || "خطا در ثبت‌نام!");
-        setLoading(false);
-        return;
-      }
-
-      alert("ثبت‌نام با موفقیت انجام شد!");
-      // بعد از ثبت‌نام کاربر را به login هدایت کنیم
-      router.push("/login");
-    } catch (err) {
-      console.error(err);
-      alert("خطای سرور، دوباره تلاش کنید.");
-    } finally {
+    if (error) {
+      alert(error.message);
       setLoading(false);
+      return;
     }
+
+    // اگر پروژه توکن بده (فقط وقتی ایمیل‌وریفای خاموش باشد)
+    const token = data.session?.access_token;
+    if (token) {
+      localStorage.setItem("metrogo-token", token);
+      alert("ثبت‌نام موفق! در حال ورود...");
+      router.push("/card");
+      return;
+    }
+
+    // اگر توکن ندهد (ایمیل تایید نیاز دارد)
+    alert("ثبت‌نام انجام شد! لطفاً ایمیل خود را تایید کنید.");
+    router.push("/login");
   };
 
   return (
@@ -72,14 +79,15 @@ export default function Signup() {
 
         <form onSubmit={handleSubmit}>
           <input
-            type="text"
-            name="username"
-            placeholder="نام کاربری"
-            value={formData.username}
+            type="email"
+            name="email"
+            placeholder="ایمیل"
+            value={formData.email}
             onChange={handleChange}
             required
             style={inputStyle}
           />
+
           <input
             type="password"
             name="password"

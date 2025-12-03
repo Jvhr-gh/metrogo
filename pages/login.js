@@ -1,13 +1,16 @@
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router";
 import Link from "next/link";
+import { supabase } from "../lib/supabase";
 
 export default function Login() {
   const router = useRouter();
+
   const [formData, setFormData] = useState({
-    username: "",
+    email: "",
     password: "",
   });
+
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -18,32 +21,34 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
 
-    try {
-      const res = await fetch("/pages/api/login.js", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+    const { email, password } = formData;
 
-      const data = await res.json();
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-      if (!res.ok) {
-        alert(data.message || "خطا در ورود!");
-        setLoading(false);
-        return;
-      }
-
-      // ذخیره JWT در localStorage
-      localStorage.setItem("metrogo-token", data.token);
-
-      alert("ورود با موفقیت انجام شد!");
-      router.push("/wallet"); // انتقال به کیف پول
-    } catch (err) {
-      console.error(err);
-      alert("خطای سرور، دوباره تلاش کنید.");
-    } finally {
+    if (error) {
+      alert(error.message);
       setLoading(false);
+      return;
     }
+
+    const session = data.session;
+
+    if (!session) {
+      alert("سشن ساخته نشد!");
+      setLoading(false);
+      return;
+    }
+
+    // ذخیره کل سشن
+    localStorage.setItem("metrogo-token", session.access_token);
+    localStorage.setItem("metrogo-refresh", session.refresh_token);
+
+    alert("ورود موفق!");
+
+    router.push("/card");
   };
 
   return (
@@ -56,14 +61,15 @@ export default function Login() {
 
         <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
           <input
-            type="text"
-            name="username"
-            placeholder="نام کاربری"
-            value={formData.username}
+            type="email"
+            name="email"
+            placeholder="ایمیل"
+            value={formData.email}
             onChange={handleChange}
             required
             className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
+
           <input
             type="password"
             name="password"
@@ -73,6 +79,7 @@ export default function Login() {
             required
             className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
+
           <button
             type="submit"
             disabled={loading}
