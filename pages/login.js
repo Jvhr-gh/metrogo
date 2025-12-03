@@ -2,6 +2,10 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { supabase } from "../lib/supabase";
+export const config = {
+  unstable_runtimeJS: true,
+};
+
 
 export default function Login() {
   const router = useRouter();
